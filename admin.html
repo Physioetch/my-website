@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>PhysioEtch – لوحة الإدارة</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary : #390676;
+      --accent  : #9861CB;
+      --text    : #FDFEFE;
+      --card    : rgba(255,255,255,0.07);
+      --border  : rgba(152,97,203,0.30);
+      --radius  : 14px;
+      --input-bg: rgba(255,255,255,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(160deg, #1a0335 0%, #390676 40%, #4a0a8f 70%, #1a0335 100%);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      direction: rtl;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── LOGIN OVERLAY ────────────────────────────── */
+    #loginOverlay {
+      position: fixed; inset: 0;
+      background: rgba(10,0,25,0.96);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(12px);
+    }
+
+    #loginOverlay.hidden { display: none; }
+
+    .login-box {
+      background: rgba(57,6,118,0.6);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 40px 32px;
+      max-width: 340px;
+      width: 90%;
+      text-align: center;
+      backdrop-filter: blur(16px);
+    }
+
+    .login-box .lock-icon {
+      font-size: 2.8rem;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .login-box h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 6px; }
+    .login-box p  { font-size: 0.85rem; color: rgba(253,254,254,.65); margin-bottom: 24px; }
+
+    .login-box input {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1rem;
+      text-align: center;
+      letter-spacing: 4px;
+      margin-bottom: 16px;
+      outline: none;
+    }
+
+    .login-box input:focus { border-color: var(--accent); }
+
+    .login-box .err { color: #ff6b6b; font-size: 0.82rem; margin-bottom: 10px; min-height: 18px; }
+
+    /* ── BUTTONS ──────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: var(--radius);
+      border: none;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s, background .2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #7b3fbf);
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(152,97,203,.4);
+    }
+
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(152,97,203,.55); }
+
+    .btn-danger  { background: rgba(220,53,69,.2); border:1px solid rgba(220,53,69,.4); color: #ff8b8b; }
+    .btn-danger:hover { background: rgba(220,53,69,.35); }
+
+    .btn-ghost  { background: var(--card); border:1px solid var(--border); color: var(--text); }
+    .btn-ghost:hover { background: rgba(152,97,203,.15); }
+
+    .btn-full { width: 100%; }
+
+    /* ── LAYOUT ───────────────────────────────────── */
+    #adminPanel { display: none; max-width: 600px; margin: 0 auto; padding: 20px 16px 80px; }
+    #adminPanel.visible { display: block; }
+
+    /* ── TOP BAR ──────────────────────────────────── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar h1 { font-size: 1.25rem; font-weight: 900; display: flex; align-items: center; gap: 10px; }
+    .topbar h1 i { color: var(--accent); }
+
+    /* ── CARD ─────────────────────────────────────── */
+    .admin-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(8px);
+    }
+
+    .admin-card h3 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent);
+    }
+
+    .admin-card h3 i { font-size: 1rem; }
+
+    /* ── FORM FIELDS ──────────────────────────────── */
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: rgba(253,254,254,.7);
+      margin-bottom: 5px;
+      margin-top: 12px;
+    }
+
+    label:first-child { margin-top: 0; }
+
+    input[type="text"],
+    input[type="tel"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color .2s;
+      direction: rtl;
+    }
+
+    input[type="text"]:focus,
+    input[type="tel"]:focus,
+    textarea:focus { border-color: var(--accent); }
+
+    textarea { min-height: 70px; resize: vertical; }
+
+    /* ── IMAGE UPLOADER ───────────────────────────── */
+    .img-uploader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .img-preview {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: top center;
+      border: 3px solid var(--accent);
+      background: #1a0335;
+    }
+
+    /* ── PHOTO SLOTS ──────────────────────────────── */
+    .photo-slots { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+
+    .photo-slot-admin {
+      aspect-ratio: 1;
+      border-radius: 12px;
+      background: var(--input-bg);
+      border: 2px dashed var(--border);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: border-color .2s;
+      position: relative;
+    }
+
+    .photo-slot-admin:hover { border-color: var(--accent); }
+
+    .photo-slot-admin img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .photo-slot-admin .slot-label {
+      font-size: 0.7rem;
+      color: rgba(152,97,203,.7);
+      z-index: 1;
+      text-align: center;
+    }
+
+    .photo-slot-admin i { color: var(--accent); font-size: 1.4rem; z-index: 1; }
+
+    .photo-slot-admin .remove-photo {
+      position: absolute;
+      top: 4px; left: 4px;
+      width: 22px; height: 22px;
+      background: rgba(220,53,69,.85);
+      border-radius: 50%;
+      display: none;
+      align-items: center; justify-content: center;
+      color: #fff;
+      font-size: 0.65rem;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .photo-slot-admin:hover .remove-photo { display: flex; }
+
+    /* ── PACKAGE ROW ──────────────────────────────── */
+    .pkg-row {
+      background: rgba(0,0,0,.2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .pkg-row-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .pkg-row-top input { flex: 1; margin-left: 8px; }
+
+    .pkg-prices {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 8px;
+    }
+
+    .pkg-prices .price-field label { margin-top: 0; font-size: 0.72rem; }
+
+    .featured-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      margin-top: 8px;
+      color: rgba(253,254,254,.7);
+    }
+
+    .featured-toggle input { width: auto; accent-color: var(--accent); }
+
+    /* ── SAVE BAR ─────────────────────────────────── */
+    .save-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(26,3,53,.95);
+      border-top: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    /* ── TOAST ────────────────────────────────────── */
+    #toast {
+      position: fixed;
+      top: 20px; left: 50%;
+      transform: translateX(-50%) translateY(-60px);
+      background: var(--accent);
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      transition: transform .35s;
+      z-index: 9999;
+      white-space: nowrap;
+    }
+
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── RESPONSIVE ───────────────────────────────── */
+    @media (min-width: 480px) {
+      #adminPanel { padding: 24px 24px 80px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ TOAST ══════════════════════════════════════════ -->
+<div id="toast"><i class="fa-solid fa-check"></i> تم الحفظ بنجاح!</div>
+
+<!-- ══ LOGIN OVERLAY ══════════════════════════════════ -->
+<div id="loginOverlay">
+  <div class="login-box">
+    <div class="lock-icon"><i class="fa-solid fa-lock"></i></div>
+    <h2>لوحة الإدارة</h2>
+    <p>أدخل كلمة السر للمتابعة</p>
+    <input type="password" id="pwInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPw()" />
+    <div class="err" id="pwErr"></div>
+    <button class="btn btn-primary btn-full" onclick="checkPw()">
+      <i class="fa-solid fa-unlock"></i> دخول
+    </button>
+  </div>
+</div>
+
+<!-- ══ ADMIN PANEL ══════════════════════════════════════ -->
+<div id="adminPanel">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <h1><i class="fa-solid fa-sliders"></i> لوحة الإدارة</h1>
+    <a href="index.html" class="btn btn-ghost"><i class="fa-solid fa-arrow-left"></i> الموقع</a>
+  </div>
+
+  <!-- ── CONTACT ───────────────────────────────────── -->
+  <div class="admin-card">
+    <h3><i class="fa-brands fa-whatsapp"></i> بيانات التواصل</h3>
+    <label>رقم الواتساب (بدون +)</label>
+    <input type="tel" id="waNumber" placeholder="201093291240" />
+    <label>رسالة الترحيب</label>
+    <input type="text" id="waMessage" placeholder="عايز أبدأ تأهيل أونلاين" />
+  </div>
+
+  <!-- ── HERO ──────────────────────────────────────── -->
+  <div class="admin-card">
+    <h3><i class="fa-solid fa-user-circle"></i> صفحة البداية</h3>
+
+    <label>الصورة الشخصية</label>
+    <div class="img-uploader">
+      <img id="heroPreview" class="img-preview" src="physioetch-image.png" alt="preview" />
+      <button class="btn btn-ghost" onclick="document.getElementById('heroImgInput').click()">
+        <i class="fa-solid fa-upload"></i> رفع صورة جديدة
+      </button>
+      <input type="file" id="heroImgInput" accept="image/*" style="display:none" onchange="uploadHeroImg(this)" />
+    </div>
+
+    <label>الاسم / العنوان الكبير</label>
+    <input type="text" id="heroTitle" placeholder="Physioetch" />
+
+    <label>الجملة التعريفية</label>
+    <textarea id="heroSub"></textarea>
+
+    <label>ميزة ١</label>
+    <input type="text" id="feat1" />
+    <label>ميزة ٢</label>
+    <input type="text" id="feat2" />
+    <label>ميزة ٣</label>
+    <input type="text" id="feat3" />
+
+    <label>نص زرار "ابدأ تأهيلك"</label>
+    <input type="text" id="ctaTitle" />
+    <label>تفاصيل الزرار</label>
+    <textarea id="ctaSub"></textarea>
+  </div>
+
+  <!-- ── PROGRAM PHOTOS ────────────────────────────── -->
+  <div class="admin-card">
+    <h3><i class="fa-solid fa-photo-film"></i> صور شكل البرنامج</h3>
+    <div class="photo-slots" id="progSlots"></div>
+    <input type="file" id="progFile" accept="image/*" style="display:none" />
+  </div>
+
+  <!-- ── STORIES PHOTOS ────────────────────────────── -->
+  <div class="admin-card">
+    <h3><i class="fa-solid fa-heart-pulse"></i> صور رحلات التعافى</h3>
+    <div class="photo-slots" id="storiesSlots"></div>
+    <input type="file" id="storiesFile" accept="image/*" style="display:none" />
+  </div>
+
+  <!-- ── PACKAGES ───────────────────────────────────── -->
+  <div class="admin-card">
+    <h3><i class="fa-solid fa-tags"></i> الباقات والأسعار</h3>
+    <div id="pkgList"></div>
+    <button class="btn btn-ghost" onclick="addPackage()" style="margin-top:4px; width:100%">
+      <i class="fa-solid fa-plus"></i> أضف باقة
+    </button>
+  </div>
+
+</div><!-- /adminPanel -->
+
+<!-- ══ SAVE BAR ════════════════════════════════════════ -->
+<div class="save-bar">
+  <button class="btn btn-primary" onclick="saveAll()">
+    <i class="fa-solid fa-floppy-disk"></i> حفظ كل التعديلات
+  </button>
+  <button class="btn btn-danger" onclick="if(confirm('هتمسح كل البيانات؟')) resetAll()">
+    <i class="fa-solid fa-rotate-left"></i> إعادة ضبط
+  </button>
+</div>
+
+<script>
+const DB_URL = "https://physioetch-pt-default-rtdb.firebaseio.com/siteData.json";
+const ADMIN_PW = 'physio2025';
+
+async function checkPw() {
+  const val = document.getElementById('pwInput').value;
+  if (val === ADMIN_PW) {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('adminPanel').classList.add('visible');
+    await loadAll();
+  } else {
+    document.getElementById('pwErr').textContent = 'كلمة السر غلط، حاول تانى';
+    document.getElementById('pwInput').value = '';
+  }
+}
+
+const DEFAULTS = {
+  whatsapp   : '201093291240',
+  waMessage  : 'عايز أبدأ تأهيل أونلاين',
+  heroTitle  : 'Physioetch',
+  heroSub    : 'برامج تأهيل مبنية على تحليل علمى لإصابتك الرياضية',
+  feat1      : 'تقييم دقيق لإصابتك',
+  feat2      : 'خطة تأهيل مناسبة لهدفك',
+  feat3      : 'متابعة وتطوير مستمر',
+  ctaTitle   : 'ابدأ تأهيلك',
+  ctaSub     : 'ابدأ تقييم مبدئي لحالتك لمعرفة إذا كان التأهيل أونلاين مناسب ليك',
+  heroImage  : 'physioetch-image.png',
+  progImages   : ['','',''],
+  storiesImages: ['','',''],
+  packages   : [
+    { label:'6 جلسات',  featured:false, egp:'', sar:'', usd:'' },
+    { label:'8 جلسات',  featured:true,  egp:'', sar:'', usd:'' },
+    { label:'12 جلسة', featured:false, egp:'', sar:'', usd:'' }
+  ]
+};
+
+let serverData = JSON.parse(JSON.stringify(DEFAULTS));
+
+async function loadAll() {
+  try {
+    const res = await fetch(DB_URL);
+    const data = await res.json();
+    if (data && data.packages) {
+      serverData = Object.assign({}, DEFAULTS, data);
+    } else {
+      serverData = JSON.parse(JSON.stringify(DEFAULTS));
+    }
+  } catch(e) {
+    serverData = JSON.parse(JSON.stringify(DEFAULTS));
+  }
+
+  document.getElementById('waNumber').value  = serverData.whatsapp;
+  document.getElementById('waMessage').value = serverData.waMessage;
+  document.getElementById('heroTitle').value  = serverData.heroTitle;
+  document.getElementById('heroSub').value    = serverData.heroSub;
+  document.getElementById('feat1').value = serverData.feat1;
+  document.getElementById('feat2').value = serverData.feat2;
+  document.getElementById('feat3').value = serverData.feat3;
+  document.getElementById('ctaTitle').value = serverData.ctaTitle;
+  document.getElementById('ctaSub').value   = serverData.ctaSub;
+
+  heroImageSrc = serverData.heroImage || 'physioetch-image.png';
+  document.getElementById('heroPreview').src = heroImageSrc;
+
+  progImages    = (serverData.progImages || ['', '', '']).slice();
+  storiesImages = (serverData.storiesImages || ['', '', '']).slice();
+
+  renderPhotoSlots('progSlots', progImages, 'prog');
+  renderPhotoSlots('storiesSlots', storiesImages, 'stories');
+  renderPackages(serverData.packages);
+}
+
+let progImages    = ['','',''];
+let storiesImages = ['','',''];
+let heroImageSrc  = 'physioetch-image.png';
+let packages = [];
+
+function uploadHeroImg(input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    heroImageSrc = e.target.result;
+    document.getElementById('heroPreview').src = heroImageSrc;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function renderPhotoSlots(containerId, arr, prefix) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  arr.forEach((src, i) => {
+    const slot = document.createElement('div');
+    slot.className = 'photo-slot-admin';
+    slot.onclick = () => openPhotoUpload(prefix, i);
+
+    if (src) {
+      const img = document.createElement('img');
+      img.src = src;
+      slot.appendChild(img);
+
+      const rm = document.createElement('div');
+      rm.className = 'remove-photo';
+      rm.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      rm.onclick = (e) => { e.stopPropagation(); removePhoto(prefix, i); };
+      slot.appendChild(rm);
+    } else {
+      slot.innerHTML = `<i class="fa-regular fa-image"></i><div class="slot-label">اضغط لرفع صورة</div>`;
+    }
+    container.appendChild(slot);
+  });
+}
+
+function openPhotoUpload(prefix, index) {
+  const fileId = prefix === 'prog' ? 'progFile' : 'storiesFile';
+  const input  = document.getElementById(fileId);
+  input.onchange = (e) => {
+    if (!e.target.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      if (prefix === 'prog')    progImages[index]    = ev.target.result;
+      if (prefix === 'stories') storiesImages[index] = ev.target.result;
+      renderPhotoSlots(prefix + 'Slots',
+        prefix === 'prog' ? progImages : storiesImages, prefix);
+    };
+    reader.readAsDataURL(e.target.files[0]);
+    input.value = '';
+  };
+  input.click();
+}
+
+function removePhoto(prefix, index) {
+  if (prefix === 'prog')    progImages[index]    = '';
+  if (prefix === 'stories') storiesImages[index] = '';
+  renderPhotoSlots(prefix + 'Slots',
+    prefix === 'prog' ? progImages : storiesImages, prefix);
+}
+
+function renderPackages(pkgs) {
+  packages = JSON.parse(JSON.stringify(pkgs));
+  redrawPkgList();
+}
+
+function redrawPkgList() {
+  const list = document.getElementById('pkgList');
+  list.innerHTML = '';
+  packages.forEach((pkg, i) => {
+    const row = document.createElement('div');
+    row.className = 'pkg-row';
+    row.innerHTML = `
+      <div class="pkg-row-top">
+        <input type="text" value="${pkg.label}" placeholder="اسم الباقة"
+               oninput="packages[${i}].label = this.value" style="flex:1; margin-left:8px" />
+        <button class="btn btn-danger" onclick="removePackage(${i})" style="padding:8px 12px; font-size:.8rem">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+      <div class="pkg-prices">
+        <div class="price-field">
+          <label>🇪🇬 جنيه</label>
+          <input type="text" value="${pkg.egp}" placeholder="السعر"
+                 oninput="packages[${i}].egp = this.value" />
+        </div>
+        <div class="price-field">
+          <label>🇸🇦 ريال</label>
+          <input type="text" value="${pkg.sar}" placeholder="السعر"
+                 oninput="packages[${i}].sar = this.value" />
+        </div>
+        <div class="price-field">
+          <label>🇺🇸 دولار</label>
+          <input type="text" value="${pkg.usd}" placeholder="السعر"
+                 oninput="packages[${i}].usd = this.value" />
+        </div>
+      </div>
+      <label class="featured-toggle">
+        <input type="checkbox" ${pkg.featured ? 'checked' : ''}
+               onchange="packages[${i}].featured = this.checked" />
+        الأكثر طلباً (تمييز الباقة)
+      </label>`;
+    list.appendChild(row);
+  });
+}
+
+function addPackage() {
+  packages.push({ label:'باقة جديدة', featured:false, egp:'', sar:'', usd:'' });
+  redrawPkgList();
+}
+
+function removePackage(i) {
+  if (packages.length <= 1) return alert('لازم يكون فى باقة واحدة على الأقل');
+  packages.splice(i, 1);
+  redrawPkgList();
+}
+
+async function saveAll() {
+  const data = {
+    whatsapp  : document.getElementById('waNumber').value.trim()  || DEFAULTS.whatsapp,
+    waMessage : document.getElementById('waMessage').value.trim() || DEFAULTS.waMessage,
+    heroTitle : document.getElementById('heroTitle').value.trim() || DEFAULTS.heroTitle,
+    heroSub   : document.getElementById('heroSub').value.trim()   || DEFAULTS.heroSub,
+    feat1     : document.getElementById('feat1').value.trim()     || DEFAULTS.feat1,
+    feat2     : document.getElementById('feat2').value.trim()     || DEFAULTS.feat2,
+    feat3     : document.getElementById('feat3').value.trim()     || DEFAULTS.feat3,
+    ctaTitle  : document.getElementById('ctaTitle').value.trim()  || DEFAULTS.ctaTitle,
+    ctaSub    : document.getElementById('ctaSub').value.trim()    || DEFAULTS.ctaSub,
+    heroImage : heroImageSrc,
+    progImages,
+    storiesImages,
+    packages
+  };
+
+  try {
+    await fetch(DB_URL, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+    showToast('تم الحفظ والتحديث على السيرفر بنجاح!');
+  } catch(e) {
+    alert('حدث خطأ أثناء الحفظ بالسيرفر');
+  }
+}
+
+async function resetAll() {
+  heroImageSrc  = DEFAULTS.heroImage;
+  progImages    = DEFAULTS.progImages.slice();
+  storiesImages = DEFAULTS.storiesImages.slice();
+  
+  try {
+    await fetch(DB_URL, {
+      method: 'PUT',
+      body: JSON.stringify(DEFAULTS)
+    });
+    await loadAll();
+    showToast('تم إعادة الضبط!');
+  } catch(e) {
+    alert('خطأ في إعادة الضبط');
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerHTML = `<i class="fa-solid fa-check"></i> ${msg || 'تم الحفظ بنجاح!'}`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>

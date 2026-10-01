@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>PhysioEtch</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    /* ── RESET ───────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary : #390676;
+      --accent  : #9861CB;
+      --text    : #FDFEFE;
+      --card    : rgba(255,255,255,0.07);
+      --border  : rgba(152,97,203,0.30);
+      --radius  : 18px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(160deg, #1a0335 0%, #390676 40%, #4a0a8f 70%, #1a0335 100%);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      direction: rtl;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    /* ── PAGE WRAPPER ──────────────────────────── */
+    .page-wrapper {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 0 18px 80px;
+    }
+
+    section { padding: 28px 0 8px; }
+
+    /* ── HERO ──────────────────────────────────── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding-top: 44px;
+      gap: 18px;
+    }
+
+    /* Logo row: small circle image + brand text */
+    .hero-brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-direction: row-reverse;   /* image on the right */
+    }
+
+    .hero-logo-mini {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: top center;
+      flex-shrink: 0;
+      background: transparent;
+    }
+
+    .hero-brand {
+      font-size: clamp(1.9rem, 7vw, 2.6rem);
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: 1px;
+      text-shadow: 0 0 22px rgba(152,97,203,0.7);
+      line-height: 1;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(0.9rem, 3.5vw, 1.05rem);
+      font-weight: 600;
+      color: rgba(253,254,254,0.88);
+      max-width: 330px;
+      line-height: 1.8;
+    }
+
+    .divider {
+      width: 56px; height: 3px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      border-radius: 2px;
+      margin: 2px auto 0;
+    }
+
+    /* ── FEATURE CARDS (small icons) ──────────── */
+    .features { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+
+    .feature-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      backdrop-filter: blur(8px);
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .feature-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(152,97,203,.3); }
+
+    .feature-card .f-icon {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      background: rgba(152,97,203,0.18);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 1rem;
+    }
+
+    .feature-card span { font-size: 0.9rem; font-weight: 700; }
+
+    /* ── CTA BUTTON ────────────────────────────── */
+    .cta-section { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+
+    .cta-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent), #7b3fbf);
+      border: none;
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 6px 26px rgba(152,97,203,.45);
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .cta-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 34px rgba(152,97,203,.6); }
+    .cta-btn .cta-icon { font-size: 1.8rem; color: var(--text); }
+    .cta-btn .cta-title { font-size: 1.35rem; font-weight: 900; color: var(--text); }
+    .cta-btn .cta-sub { font-size: 0.85rem; font-weight: 500; color: rgba(253,254,254,.82); max-width: 290px; line-height: 1.6; }
+
+    /* ── ACCORDION HEADER ──────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      margin-bottom: 0;
+      cursor: pointer;
+      user-select: none;
+      padding: 14px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(8px);
+      transition: background .2s;
+    }
+
+    .section-header:hover { background: rgba(152,97,203,0.12); }
+
+    .section-header .s-icon {
+      flex-shrink: 0;
+      width: 44px; height: 44px;
+      background: rgba(152,97,203,0.18);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent);
+      font-size: 1.3rem;
+      border: 2px solid rgba(152,97,203,0.35);
+    }
+
+    .section-header h2 { font-size: 1.1rem; font-weight: 800; flex: 1; }
+
+    .section-header .chevron {
+      color: var(--accent);
+      font-size: 1rem;
+      transition: transform .35s;
+    }
+
+    .section-header.open .chevron { transform: rotate(180deg); }
+
+    /* ── ACCORDION CONTENT ─────────────────────── */
+    .accordion-content {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height .55s ease, padding .35s;
+      padding: 0 4px;
+    }
+
+    .accordion-content.open { max-height: 3000px; padding: 16px 4px 4px; }
+
+    /* ── HOW WE WORK STEPS ─────────────────────── */
+    .step-item {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .step-item::before {
+      content: '';
+      position: absolute;
+      right: 22px;
+      top: 50px;
+      bottom: -20px;
+      width: 2px;
+      background: rgba(152,97,203,0.2);
+    }
+
+    .step-item:last-child::before { display: none; }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 46px; height: 46px;
+      background: linear-gradient(135deg, var(--accent), #7b3fbf);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; font-weight: 900; color: var(--text);
+    }
+
+    .step-text h3 { font-size: 0.95rem; font-weight: 800; margin-bottom: 5px; }
+    .step-text p  { font-size: 0.83rem; color: rgba(253,254,254,.75); line-height: 1.7; }
+
+    /* ── PHOTOS GRID ───────────────────────────── */
+    .photos-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+
+    .photo-slot {
+      aspect-ratio: 1;
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--card);
+      border: 2px dashed var(--border);
+    }
+
+    .photo-slot img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 14px;
+    }
+
+    .photo-slot.empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: rgba(152,97,203,.55);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 8px;
+    }
+
+    .photo-slot.empty i { font-size: 1.5rem; }
+
+    /* ── PRICING ────────────────────────────────── */
+    .pricing-grid { display: flex; flex-direction: column; gap: 12px; }
+
+    .price-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(8px);
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .price-card:hover { transform: translateY(-3px); box-shadow: 0 8px 26px rgba(152,97,203,.3); }
+
+    .price-card.featured {
+      border-color: var(--accent);
+      background: rgba(152,97,203,.18);
+      box-shadow: 0 4px 18px rgba(152,97,203,.28);
+    }
+
+    .price-card .p-title  { font-size: 1rem; font-weight: 800; }
+    .price-card .p-badge  { font-size: 0.72rem; background: var(--accent); color: #fff; padding: 2px 9px; border-radius: 20px; margin-top: 4px; display: inline-block; }
+    .price-card .p-price  { text-align: left; font-size: 1rem; font-weight: 700; color: var(--accent); }
+    .price-card .p-price .p-unit { font-size: 0.75rem; color: rgba(253,254,254,.5); font-weight: 400; }
+
+    /* ── CURRENCY SWITCHER ─────────────────────── */
+    .currency-switcher { display: flex; justify-content: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+
+    .currency-btn {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 30px;
+      padding: 7px 16px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .25s;
+    }
+
+    .currency-btn.active, .currency-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ── FINAL CTA ─────────────────────────────── */
+    .whatsapp-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      border: none;
+      border-radius: var(--radius);
+      padding: 26px 20px;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      box-shadow: 0 6px 26px rgba(37,211,102,.32);
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .whatsapp-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 34px rgba(37,211,102,.48); }
+    .whatsapp-btn .wa-icon  { font-size: 2.2rem; color: #fff; }
+    .whatsapp-btn .wa-title { font-size: 1.35rem; font-weight: 900; color: #fff; }
+    .whatsapp-btn .wa-sub   { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,.85); max-width: 290px; line-height: 1.6; }
+
+    /* ── ADMIN LINK (bottom corner) ────────────── */
+    .admin-link {
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      width: 40px; height: 40px;
+      background: rgba(57,6,118,.8);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent);
+      font-size: 1rem;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      text-decoration: none;
+      transition: background .2s;
+    }
+
+    .admin-link:hover { background: var(--accent); color: #fff; }
+
+    /* ── RESPONSIVE ─────────────────────────────── */
+    @media (min-width: 600px) {
+      .page-wrapper { padding: 0 28px 80px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- ══ HERO ════════════════════════════════════ -->
+  <section class="hero">
+
+    <!-- Brand row: logo mini + name -->
+    <div class="hero-brand-row">
+      <img id="heroLogoMini" class="hero-logo-mini" src="physioetch-image.png" alt="logo" />
+      <div class="hero-brand" id="heroTitle">Physioetch</div>
+    </div>
+
+    <p class="hero-subtitle" id="heroSubtitle">
+      برامج تأهيل مبنية على تحليل علمى لإصابتك الرياضية
+    </p>
+    <div class="divider"></div>
+
+    <!-- 3 Feature chips -->
+    <div class="features">
+      <div class="feature-card">
+        <div class="f-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+        <span id="feat1">تقييم دقيق لإصابتك</span>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon"><i class="fa-solid fa-route"></i></div>
+        <span id="feat2">خطة تأهيل مناسبة لهدفك</span>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon"><i class="fa-solid fa-chart-line"></i></div>
+        <span id="feat3">متابعة وتطوير مستمر</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ START CTA ════════════════════════════════ -->
+  <section class="cta-section">
+    <a id="ctaBtn" href="#" class="cta-btn" target="_blank">
+      <i class="fa-solid fa-person-running cta-icon"></i>
+      <div class="cta-title" id="ctaTitle">ابدأ تأهيلك</div>
+      <div class="cta-sub" id="ctaSub">ابدأ تقييم مبدئي لحالتك لمعرفة إذا كان التأهيل أونلاين مناسب ليك</div>
+    </a>
+  </section>
+
+  <!-- ══ HOW WE WORK ══════════════════════════════ -->
+  <section>
+    <div class="section-header" onclick="toggleAccordion('howContent', this)">
+      <div class="s-icon"><i class="fa-solid fa-gears"></i></div>
+      <h2>إزاى بنشتغل معاك</h2>
+      <i class="fa-solid fa-chevron-down chevron"></i>
+    </div>
+    <div class="accordion-content" id="howContent">
+      <div class="step-item">
+        <div class="step-num">01</div>
+        <div class="step-text">
+          <h3>التقييم المبدئى</h3>
+          <p>هتجاوب على شوية أسئلة بسيطة عن إصابتك، الأعراض، نشاطك وهدفك</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">02</div>
+        <div class="step-text">
+          <h3>مراجعة حالتك</h3>
+          <p>هنراجع إجابتك ونحدد إذا كانت حالتك مناسبة للتأهيل الأونلاين</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">03</div>
+        <div class="step-text">
+          <h3>التقييم بالفيديو</h3>
+          <p>لو حالتك مناسبة، هنعمل تقييم فيديو للحركة والقوة والوظيفة عشان نفهم حالتك بشكل أدق</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">04</div>
+        <div class="step-text">
+          <h3>خطة التأهيل</h3>
+          <p>هتاخد برنامج مخصص لحالتك وهدفك بتمارين متدرجة ومناسبة لكل مرحلة</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">05</div>
+        <div class="step-text">
+          <h3>المتابعة والتطوير</h3>
+          <p>متابعة فورية لتقدمك وتعديل التمارين ومستوى الصعوبة حسب استجابتك وتطور حالتك</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PROGRAM SHAPE ════════════════════════════ -->
+  <section>
+    <div class="section-header" onclick="toggleAccordion('progContent', this)">
+      <div class="s-icon"><i class="fa-solid fa-photo-film"></i></div>
+      <h2>شكل البرنامج</h2>
+      <i class="fa-solid fa-chevron-down chevron"></i>
+    </div>
+    <div class="accordion-content" id="progContent">
+      <div class="photos-grid" id="progGrid">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SUCCESS STORIES ══════════════════════════ -->
+  <section>
+    <div class="section-header" onclick="toggleAccordion('storiesContent', this)">
+      <div class="s-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+      <h2>رحلات تعافى حقيقية</h2>
+      <i class="fa-solid fa-chevron-down chevron"></i>
+    </div>
+    <div class="accordion-content" id="storiesContent">
+      <div class="photos-grid" id="storiesGrid">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PRICING ══════════════════════════════════ -->
+  <section>
+    <div class="section-header" onclick="toggleAccordion('priceContent', this)">
+      <div class="s-icon"><i class="fa-solid fa-tags"></i></div>
+      <h2>الباقات والأسعار</h2>
+      <i class="fa-solid fa-chevron-down chevron"></i>
+    </div>
+    <div class="accordion-content" id="priceContent">
+      <div class="currency-switcher">
+        <button class="currency-btn active" onclick="setCurrency('egp',this)">🇪🇬 جنيه</button>
+        <button class="currency-btn" onclick="setCurrency('sar',this)">🇸🇦 ريال</button>
+        <button class="currency-btn" onclick="setCurrency('usd',this)">🇺🇸 دولار</button>
+      </div>
+      <div class="pricing-grid" id="priceGrid">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FINAL CTA ════════════════════════════════ -->
+  <section>
+    <a id="waBtn" href="#" class="whatsapp-btn" target="_blank">
+      <i class="fa-brands fa-whatsapp wa-icon"></i>
+      <div class="wa-title">ابدأ تأهيلك دلوقتى</div>
+      <div class="wa-sub">جاوب على كام سؤال بسيط وابدأ أول خطوة فى تقييم حالتك</div>
+    </a>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<!-- Admin link -->
+<a class="admin-link" href="admin.html" title="لوحة الإدارة"><i class="fa-solid fa-sliders"></i></a>
+
+<script>
+const DB_URL = "https://physioetch-pt-default-rtdb.firebaseio.com/siteData.json";
+
+const DEFAULTS = {
+  whatsapp : '201093291240',
+  waMessage: 'عايز أبدأ تأهيل أونلاين',
+  heroTitle : 'Physioetch',
+  heroSub   : 'برامج تأهيل مبنية على تحليل علمى لإصابتك الرياضية',
+  feat1     : 'تقييم دقيق لإصابتك',
+  feat2     : 'خطة تأهيل مناسبة لهدفك',
+  feat3     : 'متابعة وتطوير مستمر',
+  ctaTitle  : 'ابدأ تأهيلك',
+  ctaSub    : 'ابدأ تقييم مبدئي لحالتك لمعرفة إذا كان التأهيل أونلاين مناسب ليك',
+  heroImage : 'physioetch-image.png',
+  progImages   : ['','',''],
+  storiesImages: ['','',''],
+  packages  : [
+    { label:'6 جلسات',  featured:false, egp:'', sar:'', usd:'' },
+    { label:'8 جلسات',  featured:true,  egp:'', sar:'', usd:'' },
+    { label:'12 جلسة', featured:false, egp:'', sar:'', usd:'' }
+  ]
+};
+
+let activeCurrency = 'egp';
+let cachedData = DEFAULTS;
+
+async function loadSiteData() {
+  try {
+    const res = await fetch(DB_URL);
+    const data = await res.json();
+    if (data && data.packages) {
+      cachedData = Object.assign({}, DEFAULTS, data);
+    } else {
+      cachedData = DEFAULTS;
+    }
+  } catch(e) {
+    cachedData = DEFAULTS;
+  }
+  applyData();
+}
+
+function applyData() {
+  const d = cachedData;
+
+  const waUrl = `https://wa.me/${d.whatsapp}?text=${encodeURIComponent(d.waMessage)}`;
+  document.getElementById('ctaBtn').href = waUrl;
+  document.getElementById('waBtn').href  = waUrl;
+
+  document.getElementById('heroTitle').textContent  = d.heroTitle;
+  document.getElementById('heroSubtitle').textContent = d.heroSub;
+  document.getElementById('feat1').textContent = d.feat1;
+  document.getElementById('feat2').textContent = d.feat2;
+  document.getElementById('feat3').textContent = d.feat3;
+  document.getElementById('ctaTitle').textContent = d.ctaTitle;
+  document.getElementById('ctaSub').textContent   = d.ctaSub;
+
+  document.getElementById('heroLogoMini').src = d.heroImage || 'physioetch-image.png';
+
+  renderPhotoGrid('progGrid', d.progImages || ['', '', '']);
+  renderPhotoGrid('storiesGrid', d.storiesImages || ['', '', '']);
+  renderPricing(d.packages || DEFAULTS.packages);
+}
+
+function renderPhotoGrid(gridId, images) {
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = '';
+  images.forEach((src, i) => {
+    const slot = document.createElement('div');
+    if (src) {
+      slot.className = 'photo-slot';
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = 'صورة ' + (i+1);
+      slot.appendChild(img);
+    } else {
+      slot.className = 'photo-slot empty';
+      slot.innerHTML = '<i class="fa-regular fa-image"></i><span>قريباً</span>';
+    }
+    grid.appendChild(slot);
+  });
+}
+
+function renderPricing(packages) {
+  const grid = document.getElementById('priceGrid');
+  grid.innerHTML = '';
+  packages.forEach(pkg => {
+    const card = document.createElement('div');
+    card.className = 'price-card' + (pkg.featured ? ' featured' : '');
+
+    const priceVal = pkg[activeCurrency] || 'السعر قريباً';
+    const unitMap  = { egp:'جنيه', sar:'ريال', usd:'$' };
+
+    card.innerHTML = `
+      <div>
+        <div class="p-title">${pkg.label}</div>
+        ${pkg.featured ? '<div class="p-badge">الأكثر طلباً</div>' : ''}
+      </div>
+      <div class="p-price">
+        <span class="price-val">${priceVal}</span>
+        ${pkg[activeCurrency] ? `<span class="p-unit">${unitMap[activeCurrency]}</span>` : ''}
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function setCurrency(code, btn) {
+  activeCurrency = code;
+  document.querySelectorAll('.currency-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPricing(cachedData.packages || DEFAULTS.packages);
+}
+
+function toggleAccordion(contentId, header) {
+  const content = document.getElementById(contentId);
+  const isOpen  = content.classList.contains('open');
+  content.classList.toggle('open', !isOpen);
+  header.classList.toggle('open', !isOpen);
+}
+
+loadSiteData();
+</script>
+</body>
+</html>
