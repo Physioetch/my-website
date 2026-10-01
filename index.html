@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>PhysioEtch</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary : #390676;
+      --accent  : #9861CB;
+      --text    : #FDFEFE;
+      --card    : rgba(255,255,255,0.07);
+      --border  : rgba(152,97,203,0.30);
+      --radius  : 18px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(160deg, #1a0335 0%, #390676 40%, #4a0a8f 70%, #1a0335 100%);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      direction: rtl;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+    .page-wrapper { max-width: 540px; margin: 0 auto; padding: 0 18px 80px; }
+    section { padding: 28px 0 8px; }
+    .hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 44px; gap: 18px; }
+    .hero-brand-row { display: flex; align-items: center; justify-content: center; gap: 12px; flex-direction: row-reverse; }
+    .hero-logo-mini { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; object-position: top center; background: transparent; }
+    .hero-brand { font-size: clamp(1.9rem, 7vw, 2.6rem); font-weight: 900; color: var(--text); }
+    .hero-subtitle { font-size: clamp(0.9rem, 3.5vw, 1.05rem); font-weight: 600; color: rgba(253,254,254,0.88); line-height: 1.8; }
+    .divider { width: 56px; height: 3px; background: linear-gradient(90deg, var(--accent), transparent); border-radius: 2px; margin: 2px auto 0; }
+    .features { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+    .feature-card { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; }
+    .feature-card .f-icon { width: 36px; height: 36px; background: rgba(152,97,203,0.18); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent); }
+    .cta-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; width: 100%; background: linear-gradient(135deg, var(--accent), #7b3fbf); border: none; border-radius: var(--radius); padding: 24px 20px; cursor: pointer; text-decoration: none; box-shadow: 0 6px 26px rgba(152,97,203,.45); }
+    .section-header { display: flex; align-items: center; gap: 12px; width: 100%; cursor: pointer; padding: 14px 16px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); }
+    .section-header .s-icon { width: 44px; height: 44px; background: rgba(152,97,203,0.18); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent); }
+    .section-header h2 { font-size: 1.1rem; font-weight: 800; flex: 1; }
+    .accordion-content { overflow: hidden; max-height: 0; transition: max-height .55s ease; padding: 0 4px; }
+    .accordion-content.open { max-height: 3000px; padding: 16px 4px 4px; }
+    .step-item { display: flex; gap: 16px; margin-bottom: 20px; }
+    .step-num { width: 46px; height: 46px; background: linear-gradient(135deg, var(--accent), #7b3fbf); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+    .photos-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .photo-slot { aspect-ratio: 1; border-radius: 14px; overflow: hidden; background: var(--card); border: 2px dashed var(--border); }
+    .photo-slot img { width: 100%; height: 100%; object-fit: cover; }
+    .price-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .price-card.featured { border-color: var(--accent); background: rgba(152,97,203,.18); }
+    .currency-switcher { display: flex; justify-content: center; gap: 8px; margin-bottom: 14px; }
+    .currency-btn { background: var(--card); border: 2px solid var(--border); border-radius: 30px; padding: 7px 16px; color: var(--text); font-weight: 700; cursor: pointer; }
+    .currency-btn.active { background: var(--accent); border-color: var(--accent); }
+    .whatsapp-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; background: linear-gradient(135deg, #25D366, #128C7E); border-radius: var(--radius); padding: 26px 20px; text-decoration: none; text-align: center; }
+    .admin-link { position: fixed; bottom: 16px; left: 16px; width: 40px; height: 40px; background: rgba(57,6,118,.8); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent); z-index: 999; }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <section class="hero">
+    <div class="hero-brand-row">
+      <img id="heroLogoMini" class="hero-logo-mini" src="logo.png" alt="logo" />
+      <div class="hero-brand" id="heroTitle">Physioetch</div>
+    </div>
+    <p class="hero-subtitle" id="heroSubtitle">برامج تأهيل مبنية على تحليل علمى لإصابتك الرياضية</p>
+    <div class="divider"></div>
+    <div class="features">
+      <div class="feature-card"><div class="f-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div><span id="feat1">تقييم دقيق لإصابتك</span></div>
+      <div class="feature-card"><div class="f-icon"><i class="fa-solid fa-route"></i></div><span id="feat2">خطة تأهيل مناسبة لهدفك</span></div>
+      <div class="feature-card"><div class="f-icon"><i class="fa-solid fa-chart-line"></i></div><span id="feat3">متابعة وتطوير مستمر</span></div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <a id="ctaBtn" href="#" class="cta-btn" target="_blank">
+      <i class="fa-solid fa-person-running" style="font-size: 1.8rem;"></i>
+      <div style="font-size: 1.35rem; font-weight: 900;" id="ctaTitle">ابدأ تأهيلك</div>
+      <div style="font-size: 0.85rem;" id="ctaSub">ابدأ تقييم مبدئي لحالتك لمعرفة إذا كان التأهيل أونلاين مناسب ليك</div>
+    </a>
+  </section>
+
+  <section>
+    <div class="section-header" onclick="toggleAccordion('howContent', this)">
+      <div class="s-icon"><i class="fa-solid fa-gears"></i></div>
+      <h2>إزاى بنشتغل معاك</h2>
+      <i class="fa-solid fa-chevron-down chevron"></i>
+    </div>
+    <div class="accordion-content" id="howContent">
+      <div class="step-item"><div class="step-num">01</div><div><h3>التقييم المبدئى</h3><p>هتجاوب على شوية أسئلة بسيطة عن إصابتك</p></div></div>
+      <div class="step-item"><div class="step-num">02</div><div><h3>مراجعة حالتك</h3><p>هنراجع إجابتك ونحدد مناسبة التأهيل الأونلاين</p></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-header" onclick="toggleAccordion('progContent', this)">
+      <div class="s-icon"><i class="fa-solid fa-photo-film"></i></div>
+      <h2>شكل البرنامج</h2>
+      <i class="fa-solid fa-chevron-down chevron"></i>
+    </div>
+    <div class="accordion-content" id="progContent"><div class="photos-grid" id="progGrid"></div></div>
+  </section>
+
+  <section>
+    <div class="section-header" onclick="toggleAccordion('storiesContent', this)">
+      <div class="s-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+      <h2>رحلات تعافى حقيقية</h2>
+      <i class="fa-solid fa-chevron-down chevron"></i>
+    </div>
+    <div class="accordion-content" id="storiesContent"><div class="photos-grid" id="storiesGrid"></div></div>
+  </section>
+
+  <section>
+    <div class="section-header" onclick="toggleAccordion('priceContent', this)">
+      <div class="s-icon"><i class="fa-solid fa-tags"></i></div>
+      <h2>الباقات والأسعار</h2>
+      <i class="fa-solid fa-chevron-down chevron"></i>
+    </div>
+    <div class="accordion-content" id="priceContent">
+      <div class="currency-switcher">
+        <button class="currency-btn active" onclick="setCurrency('egp',this)">🇪🇬 جنيه</button>
+        <button class="currency-btn" onclick="setCurrency('sar',this)">🇸🇦 ريال</button>
+        <button class="currency-btn" onclick="setCurrency('usd',this)">🇺🇸 دولار</button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px;" id="priceGrid"></div>
+    </div>
+  </section>
+
+  <section>
+    <a id="waBtn" href="#" class="whatsapp-btn" target="_blank">
+      <i class="fa-brands fa-whatsapp" style="font-size: 2.2rem; color: #fff;"></i>
+      <div style="font-size: 1.35rem; font-weight: 900; color: #fff;">ابدأ تأهيلك دلوقتى</div>
+    </a>
+  </section>
+</div>
+
+<a class="admin-link" href="admin.html"><i class="fa-solid fa-sliders"></i></a>
+
+<script>
+  const DB_URL = "https://physioetch-pt-default-rtdb.firebaseio.com/siteData.json";
+  let activeCurrency = 'egp';
+
+  async function loadSiteData() {
+    try {
+      const res = await fetch(DB_URL);
+      const data = await res.json();
+      if (data) renderPage(data);
+    } catch(e) { console.log(e); }
+  }
+
+  function renderPage(d) {
+    document.getElementById('heroTitle').textContent = d.heroTitle || 'Physioetch';
+    document.getElementById('heroSubtitle').textContent = d.heroSub || '';
+    document.getElementById('feat1').textContent = d.feat1 || '';
+    document.getElementById('feat2').textContent = d.feat2 || '';
+    document.getElementById('feat3').textContent = d.feat3 || '';
+    document.getElementById('ctaTitle').textContent = d.ctaTitle || '';
+    document.getElementById('ctaSub').textContent = d.ctaSub || '';
+    document.getElementById('heroLogoMini').src = d.heroImage || 'logo.png';
+
+    const waUrl = `https://wa.me/${d.whatsapp || '201093291240'}?text=${encodeURIComponent(d.waMessage || '')}`;
+    document.getElementById('ctaBtn').href = waUrl;
+    document.getElementById('waBtn').href = waUrl;
+
+    renderGrid('progGrid', d.progImages || []);
+    renderGrid('storiesGrid', d.storiesImages || []);
+    renderPricing(d.packages || []);
+  }
+
+  function renderGrid(id, arr) {
+    const grid = document.getElementById(id);
+    grid.innerHTML = '';
+    arr.forEach(src => {
+      const slot = document.createElement('div');
+      slot.className = 'photo-slot';
+      if (src) slot.innerHTML = `<img src="${src}" />`;
+      grid.appendChild(slot);
+    });
+  }
+
+  function renderPricing(pkgs) {
+    const grid = document.getElementById('priceGrid');
+    grid.innerHTML = '';
+    pkgs.forEach(pkg => {
+      const card = document.createElement('div');
+      card.className = 'price-card' + (pkg.featured ? ' featured' : '');
+      card.innerHTML = `<div><strong>${pkg.label}</strong> ${pkg.featured ? '<span style="background:var(--accent); color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:10px;">الأكثر طلباً</span>' : ''}</div><div style="color:var(--accent); font-weight:700;">${pkg[activeCurrency] || '-'}</div>`;
+      grid.appendChild(card);
+    });
+  }
+
+  function setCurrency(code, btn) {
+    activeCurrency = code;
+    document.querySelectorAll('.currency-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    loadSiteData();
+  }
+
+  function toggleAccordion(id, header) {
+    const content = document.getElementById(id);
+    content.classList.toggle('open');
+  }
+
+  loadSiteData();
+</script>
+</body>
+</html>

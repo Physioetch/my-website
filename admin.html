@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة الإدارة – PhysioEtch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Cairo', sans-serif; background: #1a0335; color: #fff; min-height: 100vh; padding: 20px; direction: rtl; }
+    .box { max-width: 500px; margin: 0 auto; background: rgba(57,6,118,0.5); border: 1px solid rgba(152,97,203,0.3); border-radius: 16px; padding: 20px; }
+    input, textarea { width: 100%; padding: 10px; margin-top: 6px; margin-bottom: 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(152,97,203,0.3); border-radius: 8px; color: #fff; }
+    .btn { background: #9861CB; color: #fff; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .photo-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .slot { aspect-ratio: 1; border: 2px dashed #9861CB; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; }
+    .slot img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
+  </style>
+</head>
+<body>
+
+<div id="loginBox" class="box" style="text-align: center; margin-top: 100px;">
+  <h2>تسجيل دخول الأدمن</h2>
+  <input type="password" id="pw" placeholder="كلمة السر" />
+  <button class="btn" onclick="login()">دخول</button>
+</div>
+
+<div id="adminPanel" class="box" style="display:none;">
+  <h2>لوحة التحكم السحابية</h2>
+  <label>رقم الواتساب</label>
+  <input type="text" id="whatsapp" />
+  <label>العنوان الرئيسي</label>
+  <input type="text" id="heroTitle" />
+  <label>الوصف</label>
+  <textarea id="heroSub"></textarea>
+
+  <h3>صور البرنامج</h3>
+  <div class="photo-slots" id="progSlots"></div>
+
+  <h3>صور آراء المرضى</h3>
+  <div class="photo-slots" id="storiesSlots"></div>
+
+  <button class="btn" onclick="saveData()" style="background:#25D366; margin-top:20px;">حفظ وتحديث مباشر للجميع</button>
+  <a href="index.html" style="display:block; text-align:center; margin-top:15px; color:#aaa;">الرجوع للموقع</a>
+</div>
+
+<script>
+  const DB_URL = "https://physioetch-pt-default-rtdb.firebaseio.com/siteData.json";
+  let progImages = ['','',''];
+  let storiesImages = ['','',''];
+  let heroImage = 'logo.png';
+
+  function login() {
+    if(document.getElementById('pw').value === 'physio2025') {
+      document.getElementById('loginBox').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      fetchData();
+    } else {
+      alert('كلمة السر خطأ');
+    }
+  }
+
+  async function fetchData() {
+    const res = await fetch(DB_URL);
+    const d = await res.json() || {};
+    document.getElementById('whatsapp').value = d.whatsapp || '';
+    document.getElementById('heroTitle').value = d.heroTitle || '';
+    document.getElementById('heroSub').value = d.heroSub || '';
+    progImages = d.progImages || ['','',''];
+    storiesImages = d.storiesImages || ['','',''];
+    heroImage = d.heroImage || 'logo.png';
+    renderSlots('progSlots', progImages, 'prog');
+    renderSlots('storiesSlots', storiesImages, 'stories');
+  }
+
+  function renderSlots(id, arr, type) {
+    const container = document.getElementById(id);
+    container.innerHTML = '';
+    arr.forEach((src, i) => {
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      slot.innerHTML = src ? `<img src="${src}">` : '<i class="fa fa-plus"></i>';
+      slot.onclick = () => uploadImg(type, i);
+      container.appendChild(slot);
+    });
+  }
+
+  function uploadImg(type, i) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = e => {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        if(type === 'prog') progImages[i] = ev.target.result;
+        if(type === 'stories') storiesImages[i] = ev.target.result;
+        renderSlots(type + 'Slots', type === 'prog' ? progImages : storiesImages, type);
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    };
+    input.click();
+  }
+
+  async function saveData() {
+    const data = {
+      whatsapp: document.getElementById('whatsapp').value,
+      heroTitle: document.getElementById('heroTitle').value,
+      heroSub: document.getElementById('heroSub').value,
+      heroImage: heroImage,
+      progImages: progImages,
+      storiesImages: storiesImages,
+      packages: [
+        { label:'6 جلسات', featured:false, egp:'600', sar:'100', usd:'30' },
+        { label:'8 جلسات', featured:true, egp:'800', sar:'130', usd:'40' },
+        { label:'12 جلسة', featured:false, egp:'1100', sar:'180', usd:'55' }
+      ]
+    };
+
+    await fetch(DB_URL, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+    alert('تم الحفظ والتحديث بنجاح للجميع أونلاين!');
+  }
+</script>
+</body>
+</html>
